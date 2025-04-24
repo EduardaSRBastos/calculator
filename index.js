@@ -38,6 +38,12 @@ screen.addEventListener("click", function (e) {
 
       const brokenScreenImg = document.querySelector(".broken-screen-img");
       brokenScreenImg.style.display = "block";
+
+      const buttons = document.querySelectorAll(".buttons-container button");
+
+      buttons.forEach((btn) => {
+        btn.disabled = true;
+      });
     } else {
       document.querySelector(".screen-tooltip").innerHTML =
         "Stop it,<br>seriously!";
@@ -183,6 +189,8 @@ const screenText = document.querySelector(".screen-text");
 let expression = "0";
 
 function handleCalculatorInput(value) {
+  if (expression === "ERROR" && value !== "C") return;
+
   switch (value) {
     case "C":
       expression = "0";
@@ -286,6 +294,11 @@ let keyHoldTimeouts = {};
 let stopRepeatingAfterHold = {};
 
 document.addEventListener("keydown", (e) => {
+  if (screenText.textContent === "ERROR") {
+    e.preventDefault();
+      return;
+  }
+  
   const keyMap = {
     "*": "×",
     "/": "÷",

@@ -2,6 +2,10 @@
   --main-color: #fdffb6;
 }
 
+html {
+  scrollbar-color: #ffaaff var(--main-color);
+}
+
 body {
   text-align: center;
   font-family: "Balsamiq Sans", sans-serif;
