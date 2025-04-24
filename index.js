@@ -43,7 +43,7 @@ screen.addEventListener("click", function (e) {
         "Stop it,<br>seriously!";
 
       const img = document.createElement("img");
-      img.src = "./assets/images/crack-screen.png";
+      img.src = "./assets/images/crack-screen.webp";
       img.classList.add("overlay");
 
       const rect = screen.getBoundingClientRect();

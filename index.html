@@ -9,14 +9,10 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Jersey+20&display=swap"
-      rel="stylesheet"
-    />
+    
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Jersey+20&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
   </head>
   <body>
     <header role="banner">
@@ -38,9 +34,14 @@
               <div class="screen-tooltip">
                 Please,<br />don't touch the screen!
               </div>
-              <img src="./assets/images/screen.png" alt="" class="screen-img" />
               <img
-                src="./assets/images/broken-screen.png"
+                src="./assets/images/screen.webp"
+                alt=""
+                class="screen-img"
+              />
+
+              <img
+                src="./assets/images/broken-screen.webp"
                 alt=""
                 class="broken-screen-img"
               />

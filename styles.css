@@ -106,7 +106,7 @@ h2 {
 .ear-right {
   background: linear-gradient(0deg, #fcfdd2, #fcfdd2) padding-box,
     linear-gradient(0deg, #fcfdd2, #fcfdd2) border-box,
-    url("./assets/images/fur.png");
+    url("./assets/images/fur.webp");
   background-blend-mode: color;
   position: absolute;
   top: -78px;
@@ -129,7 +129,7 @@ h2 {
 .calculator-container {
   background: linear-gradient(0deg, var(--main-color), #fcfdd2) padding-box,
     linear-gradient(0deg, var(--main-color), #fcfdd2) border-box,
-    url("./assets/images/fur.png") center/cover;
+    url("./assets/images/fur.webp") center/cover;
   background-blend-mode: color;
   margin-bottom: 60px;
   border-radius: 25px;
@@ -353,14 +353,14 @@ button:nth-child(1),
 button:nth-child(n + 4):nth-child(-n + 6),
 button:nth-child(20) {
   background: linear-gradient(#cbe9fd 60%, #a6dafd),
-  url("./assets/images/fur.png");
-background-blend-mode: color;
+    url("./assets/images/fur.webp");
+  background-blend-mode: color;
 }
 
 button:nth-child(n + 2):nth-child(-n + 3) {
   background: linear-gradient(#facedb 60%, #e6abbc),
-  url("./assets/images/fur.png");
-background-blend-mode: color;
+    url("./assets/images/fur.webp");
+  background-blend-mode: color;
 }
 
 button:nth-child(n + 8):nth-child(-n + 10),
@@ -368,8 +368,8 @@ button:nth-child(n + 12):nth-child(-n + 14),
 button:nth-child(n + 16):nth-child(-n + 18),
 button:nth-child(21) {
   background: linear-gradient(#facef3 60%, #ee9fe1),
-  url("./assets/images/fur.png");
-background-blend-mode: color;
+    url("./assets/images/fur.webp");
+  background-blend-mode: color;
 }
 
 button:nth-child(7),
@@ -377,14 +377,14 @@ button:nth-child(11),
 button:nth-child(15),
 button:nth-child(19) {
   background: linear-gradient(#fce7c8 60%, #f7d097),
-  url("./assets/images/fur.png");
-background-blend-mode: color;
+    url("./assets/images/fur.webp");
+  background-blend-mode: color;
 }
 
 button:nth-child(22) {
   background: linear-gradient(#c4f8b9 60%, #9ff28e),
-  url("./assets/images/fur.png");
-background-blend-mode: color;
+    url("./assets/images/fur.webp");
+  background-blend-mode: color;
 }
 
 button:hover {
