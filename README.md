@@ -7,7 +7,7 @@
 
 <p><i>This isn't your average calculator - discover hidden features and enjoy every calculation with cuteness!</i></p>
 
-<kbd> ![image](printscreen-image-url) </kbd>
+<kbd> ![image](https://github.com/user-attachments/assets/fb15e3f6-72b9-49c5-aa6b-215433243ce4) </kbd>
 
 </div>
 
@@ -24,18 +24,18 @@
 
 ## Features
 
-- **Hidden Secrets**: A calculator that’s full of surprises! Unveil quirky, hidden features while you work with numbers.
-- **Kawaii Design**: Every calculation is cuter with the playful, cat-themed aesthetic — math just got adorable!
-- **Responsive**: Enjoy the perfect experience on desktop or mobile. It adjusts beautifully to fit any screen size, no matter where you use it.
-- **Flexible Input Options**: Use the on-screen buttons or your keyboard to enter calculations. The choice is yours!
+- **Hidden Secrets**: A calculator that’s full of surprises! Unveil hidden features while you work with numbers.
+- **Kawaii Design**: Every calculation is cuter with the playful, cat-themed aesthetic.
+- **Responsive**: Enjoy the perfect experience on desktop or mobile. It adjusts to fit any screen size.
+- **Flexible Input Options**: Use the on-screen buttons or your keyboard to enter calculations.
 
 <br>
 
 ## How to Use
 
-1. **Step 1**: Open the calculator on any device — desktop, tablet, or mobile — and watch it adapt to your screen.
+1. **Step 1**: Open the calculator on any device.
 2. **Step 2**: Use either the on-screen buttons or your keyboard to enter numbers and operators. Perform basic math or try more complex calculations.
-3. **Step 3**: Hit the equals sign (=) and see the result. You’ll love the cute animations and fun surprises that come with it!
+3. **Step 3**: Hit the Equals sign or press Enter and see the result.
 
 <br>
 
