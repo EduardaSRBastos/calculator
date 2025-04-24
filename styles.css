@@ -78,7 +78,7 @@ body::after {
 }
 
 header {
-  padding: 10px 0 60px 0;
+  padding-bottom: 65px;
 }
 
 h1 {
@@ -89,7 +89,7 @@ h1 {
 
 h2 {
   font-size: 20px;
-  margin-top: -20px;
+  margin-top: -24px;
   color: #7fb0ff;
 }
 
@@ -104,7 +104,10 @@ h2 {
 
 .ear-left,
 .ear-right {
-  background: #fcfdd2;
+  background: linear-gradient(0deg, #fcfdd2, #fcfdd2) padding-box,
+    linear-gradient(0deg, #fcfdd2, #fcfdd2) border-box,
+    url("./assets/images/fur.png");
+  background-blend-mode: color;
   position: absolute;
   top: -78px;
   --r: 15px;
@@ -125,7 +128,9 @@ h2 {
 
 .calculator-container {
   background: linear-gradient(0deg, var(--main-color), #fcfdd2) padding-box,
-    linear-gradient(0deg, var(--main-color), #fcfdd2) border-box;
+    linear-gradient(0deg, var(--main-color), #fcfdd2) border-box,
+    url("./assets/images/fur.png") center/cover;
+  background-blend-mode: color;
   margin-bottom: 60px;
   border-radius: 25px;
   justify-content: center;
@@ -167,7 +172,8 @@ h2 {
   white-space: nowrap;
 }
 
-.broken-screen-img, .screen-img {
+.broken-screen-img,
+.screen-img {
   position: absolute;
   top: 0;
   left: 0;
@@ -230,7 +236,8 @@ h2 {
   top: 30px;
 }
 
-.glitch::before, .glitch::after {
+.glitch::before,
+.glitch::after {
   color: black;
   content: "ERROR";
   position: absolute;
@@ -345,29 +352,39 @@ button {
 button:nth-child(1),
 button:nth-child(n + 4):nth-child(-n + 6),
 button:nth-child(20) {
-  background: linear-gradient(#cbe9fd 60%, #a6dafd);
+  background: linear-gradient(#cbe9fd 60%, #a6dafd),
+  url("./assets/images/fur.png");
+background-blend-mode: color;
 }
 
 button:nth-child(n + 2):nth-child(-n + 3) {
-  background: linear-gradient(#facedb 60%, #e6abbc);
+  background: linear-gradient(#facedb 60%, #e6abbc),
+  url("./assets/images/fur.png");
+background-blend-mode: color;
 }
 
 button:nth-child(n + 8):nth-child(-n + 10),
 button:nth-child(n + 12):nth-child(-n + 14),
 button:nth-child(n + 16):nth-child(-n + 18),
 button:nth-child(21) {
-  background: linear-gradient(#facef3 60%, #ee9fe1);
+  background: linear-gradient(#facef3 60%, #ee9fe1),
+  url("./assets/images/fur.png");
+background-blend-mode: color;
 }
 
 button:nth-child(7),
 button:nth-child(11),
 button:nth-child(15),
 button:nth-child(19) {
-  background: linear-gradient(#fce7c8 60%, #f7d097);
+  background: linear-gradient(#fce7c8 60%, #f7d097),
+  url("./assets/images/fur.png");
+background-blend-mode: color;
 }
 
 button:nth-child(22) {
-  background: linear-gradient(#c4f8b9 60%, #9ff28e);
+  background: linear-gradient(#c4f8b9 60%, #9ff28e),
+  url("./assets/images/fur.png");
+background-blend-mode: color;
 }
 
 button:hover {
