@@ -42,7 +42,7 @@
 ## PageSpeed Insights Performance Score
 <div align="center">
   
-| [Desktop](https://pagespeed.web.dev/analysis/https-eduardasrbastos-github-io-calculator/zacmq8kevy?form_factor=desktop) | [Mobile](https://pagespeed.web.dev/analysis/https-eduardasrbastos-github-io-calculator/zacmq8kevy?form_factor=mobile) |
+| [Desktop](https://pagespeed.web.dev/analysis/https-eduardasrbastos-github-io-calculator/z4fqwp0e6b?form_factor=desktop) | [Mobile](https://pagespeed.web.dev/analysis/https-eduardasrbastos-github-io-calculator/z4fqwp0e6b?form_factor=mobile) |
 |-------|-------|
 | <kbd> ![image](desktop score image url) </kbd> | <kbd> ![image](mobile score image url) </kbd> |
 
