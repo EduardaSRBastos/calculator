@@ -5,7 +5,7 @@
 [![GitHub branch check runs](https://img.shields.io/github/check-runs/EduardaSRBastos/calculator/main?style=plastic)](https://github.com/EduardaSRBastos/calculator/actions)
 [![GitHub repo size](https://img.shields.io/github/repo-size/EduardaSRBastos/calculator?style=plastic)](https://github.com/EduardaSRBastos/calculator)
 
-<i>This isn't your average calculator - discover hidden features and enjoy every calculation with cuteness!</i>
+_This isn't your average calculator - discover hidden features and enjoy every calculation with cuteness!_
 
 <kbd> ![image](https://github.com/user-attachments/assets/fb15e3f6-72b9-49c5-aa6b-215433243ce4) </kbd>
 
