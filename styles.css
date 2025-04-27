@@ -416,7 +416,7 @@ main {
   cursor: pointer;
   filter: invert(46%) sepia(17%) saturate(1056%) hue-rotate(276deg)
     brightness(88%) contrast(91%);
-  transition: all 0.3s ease, opacity 0.2s ease;
+  transition: all 0.2s ease, opacity 0.2s ease;
   opacity: 1;
 }
 
