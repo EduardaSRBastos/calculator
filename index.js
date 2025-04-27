@@ -2,7 +2,11 @@
 document.addEventListener("DOMContentLoaded", function () {
   const currentYear = new Date().getFullYear();
 
-  document.getElementById("year").textContent = currentYear;
+  const yearElements = document.querySelectorAll(".year");
+  yearElements.forEach((element) => {
+    element.textContent = currentYear;
+  });
+
   document.title = `The Cutest Calculator in ${currentYear}`;
 
   const descriptionMeta = document.querySelector('meta[name="description"]');
@@ -175,8 +179,10 @@ function adjustScreenFontSize() {
 
   screenText.style.fontSize = "50px";
 
+  const padding = 8;
+
   while (
-    screenText.scrollWidth > screen.clientWidth &&
+    screenText.scrollWidth > screen.clientWidth - padding * 2 &&
     parseFloat(screenText.style.fontSize) > 1
   ) {
     screenText.style.fontSize =
@@ -187,9 +193,12 @@ function adjustScreenFontSize() {
 // Calculator logic
 const screenText = document.querySelector(".screen-text");
 let expression = "0";
+let justEvaluated = false;
 
 function handleCalculatorInput(value) {
   if (expression === "ERROR" && value !== "C") return;
+
+  const operators = ["+", "-", "×", "÷", "%"];
 
   switch (value) {
     case "C":
@@ -206,14 +215,25 @@ function handleCalculatorInput(value) {
           expression = "0";
         } else {
           const result = eval(safeExpression);
-          expression = result.toString();
+          const displayResult = result.toString();
+
+          history.push(`${expression} = ${displayResult}`);
+          updateHistoryUI();
+
+          expression = displayResult;
         }
       } catch (err) {
         expression = "ERROR";
       }
+      justEvaluated = true;
       break;
     case "⌫":
-      expression = expression.slice(0, -1) || "0";
+      if (justEvaluated) {
+        expression = "0";
+        justEvaluated = false;
+      } else {
+        expression = expression.slice(0, -1) || "0";
+      }
       break;
     case "±":
       if (expression && expression !== "0") {
@@ -223,9 +243,9 @@ function handleCalculatorInput(value) {
           expression = "-" + expression;
         }
       }
+      justEvaluated = false;
       break;
     default:
-      const operators = ["+", "-", "×", "÷"];
       const lastChar = expression.slice(-1);
 
       if (operators.includes(value)) {
@@ -234,12 +254,16 @@ function handleCalculatorInput(value) {
         } else {
           expression += value;
         }
+        justEvaluated = false;
       } else {
-        if (expression === "0") {
+        if (justEvaluated) {
+          expression = value;
+        } else if (expression === "0") {
           expression = value;
         } else {
           expression += value;
         }
+        justEvaluated = false;
       }
       break;
   }
@@ -295,10 +319,13 @@ let stopRepeatingAfterHold = {};
 
 document.addEventListener("keydown", (e) => {
   if (screenText.textContent === "ERROR") {
-    e.preventDefault();
+    if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
       return;
+    }
+    e.preventDefault();
+    return;
   }
-  
+
   const keyMap = {
     "*": "×",
     "/": "÷",
@@ -360,3 +387,84 @@ document.addEventListener("keyup", (e) => {
   delete keyHoldTimeouts[key];
   delete stopRepeatingAfterHold[key];
 });
+
+// Histoy logic
+const historyButton = document.querySelector(".history-button");
+const historyContainer = document.querySelector(".history-container");
+const historyList = document.querySelector(".history-list");
+const trashButton = document.querySelector(".trash-button");
+
+let history = JSON.parse(localStorage.getItem("history")) || [];
+updateHistoryUI();
+
+historyButton.addEventListener("click", () => {
+  if (historyContainer.classList.contains("active")) {
+    historyContainer.classList.remove("active");
+
+    historyButton.classList.add("fade-out");
+    setTimeout(() => {
+      historyButton.classList.remove("close-mode");
+      historyButton.innerHTML = "";
+      historyButton.classList.remove("fade-out");
+    }, 200);
+    setTimeout(() => {
+      if (!historyContainer.classList.contains("active")) {
+        historyContainer.style.display = "none";
+      }
+    }, 600);
+  } else {
+    historyContainer.style.display = "block";
+    requestAnimationFrame(() => {
+      historyContainer.classList.add("active");
+    });
+
+    historyButton.classList.add("fade-out");
+    setTimeout(() => {
+      historyButton.classList.add("close-mode");
+      historyButton.innerHTML = "×";
+      historyButton.classList.remove("fade-out");
+    }, 200);
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (
+    historyContainer.classList.contains("active") &&
+    !historyContainer.contains(e.target) &&
+    !historyButton.contains(e.target)
+  ) {
+    historyContainer.classList.remove("active");
+    historyButton.classList.remove("close-mode");
+    historyButton.innerHTML = "";
+    setTimeout(() => {
+      if (!historyContainer.classList.contains("active")) {
+        historyContainer.style.display = "none";
+      }
+    }, 400);
+  }
+});
+
+trashButton.addEventListener("click", () => {
+  history = [];
+  updateHistoryUI();
+  localStorage.removeItem("history");
+});
+
+function updateHistoryUI() {
+  historyList.innerHTML = "";
+
+  if (history.length === 0) {
+    const emptyMessage = document.createElement("li");
+    emptyMessage.textContent = "There's no history yet.";
+    emptyMessage.classList.add("empty-history");
+    historyList.appendChild(emptyMessage);
+  } else {
+    history.forEach((item) => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      historyList.appendChild(li);
+    });
+  }
+
+  localStorage.setItem("history", JSON.stringify(history));
+}
