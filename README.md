@@ -7,7 +7,7 @@
 
 _This isn't your average calculator - discover hidden features and enjoy every calculation with cuteness!_
 
-<kbd> ![image](https://github.com/user-attachments/assets/fb15e3f6-72b9-49c5-aa6b-215433243ce4) </kbd>
+<kbd> ![image](https://github.com/user-attachments/assets/2474f3e4-a51c-4317-8c3c-6ae6830d6b05) </kbd>
 
 </div>
 
