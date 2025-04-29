@@ -254,11 +254,13 @@ main {
   height: 100%;
   overflow: hidden;
 }
+
 .glitch::before {
   left: 87px;
   text-shadow: -2px 0 #eb6bcf;
   animation: glitch-animation-1 3s linear infinite;
 }
+
 .glitch::after {
   left: 93px;
   text-shadow: -2px 0 #58a7f1;

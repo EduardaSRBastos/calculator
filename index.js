@@ -22,6 +22,10 @@ const screenTooltip = document.querySelector(".screen-tooltip");
 let clickCount = 0;
 let crackCount = 0;
 let clickTimer;
+const crackTemplate = document.createElement("img");
+crackTemplate.src = "./assets/images/crack-screen-reduced.webp";
+crackTemplate.classList.add("overlay");
+const rect = screen.getBoundingClientRect();
 
 screen.addEventListener("click", function (e) {
   clickCount++;
@@ -52,33 +56,36 @@ screen.addEventListener("click", function (e) {
       document.querySelector(".screen-tooltip").innerHTML =
         "Stop it,<br>seriously!";
 
-      const img = document.createElement("img");
-      img.src = "./assets/images/crack-screen-reduced.webp";
-      img.classList.add("overlay");
-
-      const rect = screen.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      img.style.left = `${x - 55}px`;
-      img.style.top = `${y - 35}px`;
+      const crack = crackTemplate.cloneNode();
+      crack.style.left = `${x - 55}px`;
+      crack.style.top = `${y - 40}px`;
 
-      screen.appendChild(img);
+      screen.appendChild(crack);
     }
     crackCount++;
   }
 });
 
 // Screen tooltip logic
+
 screen.addEventListener("mouseenter", () => {
   screenTooltip.style.opacity = "1";
 });
 
+let lastMove = 0;
+
 screen.addEventListener("mousemove", (e) => {
-  const screenRect = screen.getBoundingClientRect();
-  const screenMidpoint = screenRect.left + screenRect.width / 2;
-  const tooltipX = e.clientX - screenRect.left + 22;
-  const tooltipY = e.clientY - screenRect.top - 21;
+  const now = Date.now();
+
+  if (now - lastMove < 30) return;
+  lastMove = now;
+
+  const screenMidpoint = rect.left + rect.width / 2;
+  const tooltipX = e.clientX - rect.left + 22;
+  const tooltipY = e.clientY - rect.top - 21;
 
   if (e.clientX > screenMidpoint) {
     screenTooltip.style.left = `${tooltipX - screenTooltip.offsetWidth - 44}px`;
@@ -136,17 +143,24 @@ const tooltipMessages = [
   "Okay okay, we get it!",
 ];
 
+const tooltipMessagesLength = tooltipMessages.length;
+const calc = document.querySelector(".calculator-container");
+let calcRect = calc.getBoundingClientRect();
+
+window.addEventListener("resize", () => {
+  calcRect = calc.getBoundingClientRect();
+});
+
 function showButtonTooltip(e) {
   const message =
-    tooltipMessages[Math.floor(Math.random() * tooltipMessages.length)];
+    tooltipMessages[Math.floor(Math.random() * tooltipMessagesLength)];
+
   buttonTooltip.innerHTML = message;
 
   buttonTooltip.style.opacity = "0";
   buttonTooltip.style.display = "block";
 
   const rect = e.target.getBoundingClientRect();
-  const calc = document.querySelector(".calculator-container");
-  const calcRect = calc.getBoundingClientRect();
 
   const tooltipWidth = buttonTooltip.offsetWidth;
   const tooltipXBase =
@@ -174,19 +188,16 @@ function showButtonTooltip(e) {
 
 // Screen text size logic
 function adjustScreenFontSize() {
-  const screenText = document.querySelector(".screen-text");
-  const screen = document.querySelector(".screen");
-
   screenText.style.fontSize = "50px";
 
   const padding = 8;
-
+  let currentSize = parseInt(screenText.style.fontSize, 10);
   while (
     screenText.scrollWidth > screen.clientWidth - padding * 2 &&
-    parseFloat(screenText.style.fontSize) > 1
+    currentSize > 1
   ) {
-    screenText.style.fontSize =
-      parseFloat(screenText.style.fontSize) - 5 + "px";
+    currentSize -= 5;
+    screenText.style.fontSize = currentSize + "px";
   }
 }
 
@@ -214,11 +225,16 @@ function handleCalculatorInput(value) {
         if (expression === "0" || expression === "00" || expression === "") {
           expression = "0";
         } else {
-          const result = eval(safeExpression);
+          const result = Function(
+            '"use strict";return (' + safeExpression + ")"
+          )();
+
           const displayResult = result.toString();
 
-          history.push(`${expression} = ${displayResult}`);
-          updateHistoryUI();
+          if (!justEvaluated) {
+            history.push(`${expression} = ${displayResult}`);
+            updateHistoryUI();
+          }
 
           expression = displayResult;
         }
@@ -268,47 +284,38 @@ function handleCalculatorInput(value) {
       break;
   }
 
-  screenText.textContent = expression || "0";
-  adjustScreenFontSize();
+  const newText = expression || "0";
+  if (screenText.textContent !== newText) {
+    screenText.textContent = newText;
+    adjustScreenFontSize();
+  }
 }
 
 // Buttons logic
 let repeatInterval;
+let repeatTimeout;
 
 buttons.forEach((button) => {
-  let isHeld = false;
-  let repeatTimeout;
+  const value = button.textContent;
+
+  const clearRepeatTimers = () => {
+    clearInterval(repeatInterval);
+    clearTimeout(repeatTimeout);
+  };
 
   button.addEventListener("mousedown", (e) => {
-    const value = button.textContent;
     handleCalculatorInput(value);
-    isHeld = true;
 
     if (button.classList.contains("number-button")) {
-      repeatInterval = setInterval(() => {
-        if (isHeld) {
-          handleCalculatorInput(value);
-        }
-      }, 200);
+      repeatInterval = setInterval(() => handleCalculatorInput(value), 200);
     }
 
-    repeatTimeout = setTimeout(() => {
-      isHeld = false;
-      clearInterval(repeatInterval);
-    }, 2000);
+    repeatTimeout = setTimeout(clearRepeatTimers, 2000);
   });
 
-  button.addEventListener("mouseup", () => {
-    isHeld = false;
-    clearInterval(repeatInterval);
-    clearTimeout(repeatTimeout);
-  });
-
-  button.addEventListener("mouseleave", () => {
-    isHeld = false;
-    clearInterval(repeatInterval);
-    clearTimeout(repeatTimeout);
-  });
+  ["mouseup", "mouseleave"].forEach((evt) =>
+    button.addEventListener(evt, clearRepeatTimers)
+  );
 });
 
 // Keys logic
@@ -316,6 +323,17 @@ let heldKeys = {};
 let keyRepeatTimers = {};
 let keyHoldTimeouts = {};
 let stopRepeatingAfterHold = {};
+
+const keyMap = {
+  "*": "×",
+  "/": "÷",
+  Enter: "=",
+  Backspace: "⌫",
+  Escape: "C",
+  Delete: "C",
+  "±": "±",
+  F9: "±",
+};
 
 document.addEventListener("keydown", (e) => {
   if (screenText.textContent === "ERROR") {
@@ -326,45 +344,21 @@ document.addEventListener("keydown", (e) => {
     return;
   }
 
-  const keyMap = {
-    "*": "×",
-    "/": "÷",
-    Enter: "=",
-    Backspace: "⌫",
-    Escape: "C",
-    Delete: "C",
-    "±": "±",
-    F9: "±",
-  };
-
   const key = e.key;
-  const buttonValue = keyMap[key] || key;
 
   if (heldKeys[key]) return;
   heldKeys[key] = true;
 
+  const buttonValue = keyMap[key] || key;
   const matchingButton = Array.from(buttons).find(
     (btn) => btn.textContent === buttonValue
   );
+
   if (!matchingButton) return;
 
   e.preventDefault();
 
   handleCalculatorInput(buttonValue);
-
-  keyHoldTimeouts[key] = setTimeout(() => {
-    if (heldKeys[key]) {
-      const rect = matchingButton.getBoundingClientRect();
-      const fakeEvent = {
-        target: matchingButton,
-        clientX: rect.left + rect.width / 2,
-        clientY: rect.top + rect.height / 2,
-      };
-      showButtonTooltip(fakeEvent);
-      stopRepeatingAfterHold[key] = true;
-      clearInterval(keyRepeatTimers[key]);
-    }
-  }, 2000);
 
   if (matchingButton.classList.contains("number-button")) {
     stopRepeatingAfterHold[key] = false;
@@ -374,6 +368,18 @@ document.addEventListener("keydown", (e) => {
       }
     }, 200);
   }
+
+  keyHoldTimeouts[key] = setTimeout(() => {
+    const rect = matchingButton.getBoundingClientRect();
+    const fakeEvent = {
+      target: matchingButton,
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2,
+    };
+    showButtonTooltip(fakeEvent);
+    stopRepeatingAfterHold[key] = true;
+    clearInterval(keyRepeatTimers[key]);
+  }, 2000);
 });
 
 document.addEventListener("keyup", (e) => {
@@ -398,33 +404,33 @@ let history = JSON.parse(localStorage.getItem("history")) || [];
 updateHistoryUI();
 
 historyButton.addEventListener("click", () => {
-  if (historyContainer.classList.contains("active")) {
-    historyContainer.classList.remove("active");
+  const isActive = historyContainer.classList.contains("active");
 
-    historyButton.classList.add("fade-out");
-    setTimeout(() => {
-      historyButton.classList.remove("close-mode");
-      historyButton.innerHTML = "";
-      historyButton.classList.remove("fade-out");
-    }, 200);
-    setTimeout(() => {
-      if (!historyContainer.classList.contains("active")) {
-        historyContainer.style.display = "none";
-      }
-    }, 600);
-  } else {
-    historyContainer.style.display = "block";
-    requestAnimationFrame(() => {
-      historyContainer.classList.add("active");
-    });
+  historyContainer.style.display = "block";
+  requestAnimationFrame(() => {
+    historyContainer.classList.toggle("active", !isActive);
+  });
 
-    historyButton.classList.add("fade-out");
-    setTimeout(() => {
+  historyButton.classList.add("fade-out");
+  setTimeout(() => {
+    if (!isActive) {
       historyButton.classList.add("close-mode");
       historyButton.innerHTML = "×";
-      historyButton.classList.remove("fade-out");
-    }, 200);
-  }
+    } else {
+      historyButton.classList.remove("close-mode");
+      historyButton.innerHTML = "";
+    }
+    historyButton.classList.remove("fade-out");
+
+    if (isActive) {
+      historyContainer.classList.remove("active");
+      setTimeout(() => {
+        if (!historyContainer.classList.contains("active")) {
+          historyContainer.style.display = "none";
+        }
+      }, 400);
+    }
+  }, 200);
 });
 
 document.addEventListener("click", (e) => {
@@ -447,10 +453,9 @@ document.addEventListener("click", (e) => {
 trashButton.addEventListener("click", () => {
   history = [];
   updateHistoryUI();
-  localStorage.removeItem("history");
 });
 
-function updateHistoryUI() {
+function updateHistoryUI(shouldSave = true) {
   historyList.innerHTML = "";
 
   if (history.length === 0) {
@@ -459,12 +464,16 @@ function updateHistoryUI() {
     emptyMessage.classList.add("empty-history");
     historyList.appendChild(emptyMessage);
   } else {
+    const fragment = document.createDocumentFragment();
     history.forEach((item) => {
       const li = document.createElement("li");
       li.textContent = item;
-      historyList.appendChild(li);
+      fragment.appendChild(li);
     });
+    historyList.appendChild(fragment);
   }
 
-  localStorage.setItem("history", JSON.stringify(history));
+  if (shouldSave) {
+    localStorage.setItem("history", JSON.stringify(history));
+  }
 }
