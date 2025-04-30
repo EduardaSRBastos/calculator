@@ -26,6 +26,7 @@ const crackTemplate = document.createElement("img");
 crackTemplate.src = "./assets/images/crack-screen-reduced.webp";
 crackTemplate.classList.add("overlay");
 const rect = screen.getBoundingClientRect();
+const buttons = document.querySelectorAll(".buttons-container button");
 
 screen.addEventListener("click", function (e) {
   clickCount++;
@@ -47,10 +48,9 @@ screen.addEventListener("click", function (e) {
       const brokenScreenImg = document.querySelector(".broken-screen-img");
       brokenScreenImg.style.display = "block";
 
-      const buttons = document.querySelectorAll(".buttons-container button");
-
       buttons.forEach((btn) => {
         btn.disabled = true;
+        btn.classList.add("disable");
       });
     } else {
       document.querySelector(".screen-tooltip").innerHTML =
@@ -70,7 +70,6 @@ screen.addEventListener("click", function (e) {
 });
 
 // Screen tooltip logic
-
 screen.addEventListener("mouseenter", () => {
   screenTooltip.style.opacity = "1";
 });
@@ -82,6 +81,12 @@ screen.addEventListener("mousemove", (e) => {
 
   if (now - lastMove < 30) return;
   lastMove = now;
+
+  if (catFace.style.opacity === "1") {
+    screenTooltip.innerHTML = "I dare you<br>to touch me...";
+  } else {
+    screenTooltip.innerHTML = "Please,<br>don't tap me twice!";
+  }
 
   const screenMidpoint = rect.left + rect.width / 2;
   const tooltipX = e.clientX - rect.left + 22;
@@ -114,7 +119,6 @@ screen.addEventListener("mouseleave", () => {
 
 // Buttons tooltip logic
 const buttonTooltip = document.querySelector(".button-tooltip");
-const buttons = document.querySelectorAll(".buttons-container button");
 let holdTimer;
 
 buttons.forEach((btn) => {
@@ -236,7 +240,35 @@ function handleCalculatorInput(value) {
             updateHistoryUI();
           }
 
-          expression = displayResult;
+          if (displayResult === "404") {
+            const oldExpression = displayResult;
+            expression = "404: No Math Found...";
+            adjustScreenFontSize();
+
+            buttons.forEach((btn) => {
+              btn.disabled = true;
+              btn.classList.add("disable");
+            });
+
+            setTimeout(() => {
+              adjustScreenFontSize();
+              screenText.innerHTML =
+                'Rebooting<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>';
+
+              setTimeout(() => {
+                expression = oldExpression;
+                adjustScreenFontSize();
+                screenText.textContent = expression;
+
+                buttons.forEach((btn) => {
+                  btn.disabled = false;
+                  btn.classList.remove("disable");
+                });
+              }, 3000);
+            }, 2000);
+          } else {
+            expression = displayResult;
+          }
         }
       } catch (err) {
         expression = "ERROR";
@@ -285,7 +317,7 @@ function handleCalculatorInput(value) {
   }
 
   const newText = expression || "0";
-  if (screenText.textContent !== newText) {
+  if (screenText.textContent !== newText && !catVisible) {
     screenText.textContent = newText;
     adjustScreenFontSize();
   }
@@ -477,3 +509,78 @@ function updateHistoryUI(shouldSave = true) {
     localStorage.setItem("history", JSON.stringify(history));
   }
 }
+
+// Inactivity logic
+let inactivityTimer;
+let lastExpression = "";
+let catVisible = false;
+const whiskersL = document.querySelector(".left-whiskers");
+const whiskersR = document.querySelector(".right-whiskers");
+const catFace = document.querySelector(".cat-face");
+const audio = new Audio("./assets/audio/meow.mp3");
+audio.preload = "auto";
+
+function showCatFace() {
+  if (catVisible) return;
+
+  lastExpression = screenText.textContent;
+  screenText.textContent = "";
+  whiskersL.style.opacity = "1";
+  whiskersR.style.opacity = "1";
+  catFace.style.opacity = "1";
+  catVisible = true;
+
+  document.body.addEventListener("click", hideCatFaceWithSound, { once: true });
+  document.addEventListener("keydown", hideCatFaceInstantly, { once: true });
+  document.querySelectorAll("button").forEach((btn) => {
+    btn.addEventListener("mouseenter", hideCatFaceInstantly, { once: true });
+  });
+}
+
+function hideCatFaceWithSound() {
+  if (!catVisible) return;
+
+  audio.volume = 0.1;
+  audio.currentTime = 0;
+  audio.play();
+
+  catFace.style.transition = "opacity 1s ease";
+  whiskersL.style.transition = "opacity 1s ease";
+  whiskersR.style.transition = "opacity 1s ease";
+
+  setTimeout(() => {
+    hideCatFaceInstantly();
+
+    setTimeout(() => {
+      catFace.style.transition = "opacity 0.6s ease";
+      whiskersL.style.transition = "opacity 0.6s ease";
+      whiskersR.style.transition = "opacity 0.6s ease";
+    }, 2000);
+  }, 500);
+}
+
+function hideCatFaceInstantly() {
+  if (!catVisible) return;
+
+  whiskersL.style.opacity = "0";
+  whiskersR.style.opacity = "0";
+  catFace.style.opacity = "0";
+  catVisible = false;
+
+  setTimeout(() => {
+    screenText.textContent = lastExpression;
+  }, 600);
+
+  resetInactivityTimer();
+}
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(showCatFace, 60000);
+}
+
+["click", "keydown", "touchstart"].forEach((evt) => {
+  document.addEventListener(evt, resetInactivityTimer);
+});
+
+resetInactivityTimer();
