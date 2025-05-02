@@ -512,6 +512,9 @@ function updateHistoryUI(shouldSave = true) {
 
 // Inactivity logic
 let inactivityTimer;
+let fishRainTimer;
+let fishSpawnTimeouts = [];
+let fishRainInterval = null;
 let lastExpression = "";
 let catVisible = false;
 const whiskersL = document.querySelector(".left-whiskers");
@@ -530,11 +533,66 @@ function showCatFace() {
   catFace.style.opacity = "1";
   catVisible = true;
 
+  fishRainTimer = setTimeout(startFishRain, 60000);
+
   document.body.addEventListener("click", hideCatFaceWithSound, { once: true });
   document.addEventListener("keydown", hideCatFaceInstantly, { once: true });
   document.querySelectorAll("button").forEach((btn) => {
     btn.addEventListener("mouseenter", hideCatFaceInstantly, { once: true });
   });
+}
+
+function startFishRain() {
+  if (!catVisible) return;
+
+  const maxWidth = window.innerWidth - 300;
+
+  fishRainInterval = setInterval(() => {
+    if (!catVisible) {
+      clearInterval(fishRainInterval);
+      return;
+    }
+
+    for (let i = 0; i < 25; i++) {
+      const timeoutId = setTimeout(() => {
+        const fish = document.createElement("div");
+        fish.className = "fish";
+
+        const color = getRandomColor();
+        const left = Math.random() * maxWidth;
+        const startTop = -Math.random() * 200;
+        const duration = 5 + Math.random() * 10;
+        const sway = 10 + Math.random() * 40;
+        const size = 150 + Math.random() * 150;
+        const flip = Math.random() < 0.5 ? -1 : 1;
+        const endY = window.innerHeight - size;
+
+        fish.style.left = `${left}px`;
+        fish.style.top = `${startTop}px`;
+        fish.style.width = `${size}px`;
+        fish.style.height = `${size}px`;
+        fish.style.setProperty("--sway", `${sway}px`);
+        fish.style.setProperty("--duration", `${duration}s`);
+        fish.style.setProperty("--flip", flip);
+        fish.style.setProperty("--endY", `${endY}px`);
+
+        fish.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='2800' width='2800'%3E%3Cpath d='M 200 400 Q 0 300 250 200 Q 350 200 450 250 L 650 400 L 650 300 L 650 200 L 450 350 Q 350 450 200 400' fill='${encodeURIComponent(
+          color
+        )}'/%3E%3C/svg%3E")`;
+
+        document.body.appendChild(fish);
+
+        setTimeout(() => fish.remove(), duration * 1000);
+      }, i * (100 + Math.random() * 200));
+
+      fishSpawnTimeouts.push(timeoutId);
+    }
+  }, 15000);
+}
+
+function getRandomColor() {
+  const colors = ["#7FB0FF", "#FF6F61", "#FFD700", "#00C49F", "#FF69B4"];
+  return colors[Math.floor(Math.random() * colors.length)];
 }
 
 function hideCatFaceWithSound() {
@@ -572,10 +630,23 @@ function hideCatFaceInstantly() {
   }, 600);
 
   resetInactivityTimer();
+
+  document.querySelectorAll(".fish").forEach((fish) => {
+    fish.style.opacity = "0";
+    setTimeout(() => fish.remove(), 500);
+  });
+
+  fishSpawnTimeouts.forEach(clearTimeout);
+  fishSpawnTimeouts = [];
+
+  clearInterval(fishRainInterval);
+  fishRainInterval = null;
 }
 
 function resetInactivityTimer() {
   clearTimeout(inactivityTimer);
+  clearTimeout(fishRainTimer);
+
   inactivityTimer = setTimeout(showCatFace, 60000);
 }
 
