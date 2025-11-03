@@ -84,7 +84,7 @@ screen.addEventListener("mousemove", (e) => {
 
   if (catFace.style.opacity === "1") {
     screenTooltip.innerHTML = "I dare you<br>to touch me...";
-  } else {
+  } else if (catFace.style.opacity === "0" && crackCount === 0) {
     screenTooltip.innerHTML = "Please,<br>don't tap me twice!";
   }
 
@@ -533,7 +533,7 @@ function showCatFace() {
   catFace.style.opacity = "1";
   catVisible = true;
 
-  fishRainTimer = setTimeout(startFishRain, 60000);
+  fishRainTimer = setTimeout(startFishRain, 30000);
 
   document.body.addEventListener("click", hideCatFaceWithSound, { once: true });
   document.addEventListener("keydown", hideCatFaceInstantly, { once: true });
@@ -647,7 +647,7 @@ function resetInactivityTimer() {
   clearTimeout(inactivityTimer);
   clearTimeout(fishRainTimer);
 
-  inactivityTimer = setTimeout(showCatFace, 60000);
+  inactivityTimer = setTimeout(showCatFace, 30000);
 }
 
 ["click", "keydown", "touchstart"].forEach((evt) => {
